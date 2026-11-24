@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Продвижение · UNU</title>
+<link rel="stylesheet" href="static/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha512-CQBWl4fJHWbryGE+Pc7UAxWMUMNMWzWxF4SQo9CgkJIN1kx6djDQZjh3Y8SZ1d+6I+1zze6Z7kHXO7q3UyZAWw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+<header class="top">
+  <div class="brand">Продвижение <span id="platform" class="tag"></span></div>
+  <nav class="tabs" aria-label="Разделы">
+    <button data-tab="promo" class="on">Товары</button>
+    <button data-tab="check">Проверка <span id="qcount" class="count"></span></button>
+    <button data-tab="workers">Исполнители</button>
+    <button data-tab="log">Журнал</button>
+  </nav>
+  <div class="status"><span id="syncinfo"></span><button id="keyBtn" class="btn">Ключ UNU</button><button id="syncnow" class="btn">Обновить</button></div>
+</header>
+
+<main>
+<!-- ТОВАРЫ -->
+<section id="promo" class="tab on">
+  <div class="head">
+    <button id="backToList" class="link hidden">← Все товары</button>
+    <h1 id="promoTitle">Товары</h1>
+    <div class="actions">
+      <button id="newProject" class="btn">Добавить товар</button>
+      <button id="newTz" class="btn primary">Новое ТЗ</button>
+    </div>
+  </div>
+  <div id="guide" class="guide hidden"></div>
+  <div id="promoSummary" class="figures"></div>
+  <div id="promoList" class="panel"></div>
+  <div id="unassigned" class="panel hidden"></div>
+  <div id="promoDetail" class="hidden"></div>
+  <p class="foot"><span id="posInfo"></span> <button id="posAgent" class="link">Снять позиции агентом в браузере</button></p>
+</section>
+
+<!-- ПРОВЕРКА -->
+<section id="check" class="tab">
+  <div class="head">
+    <h1>Проверка отчётов</h1>
+    <nav class="sub" aria-label="Проверка">
+      <button data-sub="queue" class="on">Очередь</button>
+      <button data-sub="learn">Обучение <span id="lcount" class="count"></span></button>
+      <button data-sub="how">Как решается поток</button>
+    </nav>
+  </div>
+
+  <div id="sub-queue" class="sub-on">
+    <div class="bar-tools">
+      <div class="seg" id="vfilter" role="group" aria-label="Что показать">
+        <button data-v="manual" class="on">Ждут решения</button>
+        <button data-v="rework">Предлагаем вернуть</button>
+        <button data-v="reject">Предлагаем отклонить</button>
+        <button data-v="approve">Предлагаем принять</button>
+      </div>
+      <select id="pfilter" aria-label="Товар"><option value="">Все товары</option></select>
+      <select id="qorder" aria-label="Порядок"><option value="score">Сомнительные сверху</option><option value="age">Старые сверху — срок проверки</option></select>
+      <div class="grow"></div>
+      <label class="inline">Решения
+        <select id="mode"><option value="advise">предлагает панель, отправляю я</option>
+          <option value="auto">уверенные уходят в UNU сами</option></select></label>
+      <button id="applyAll" class="btn">Отправить уверенные</button>
+    </div>
+    <div class="review">
+      <div id="rlist" class="rlist panel" aria-label="Очередь"></div>
+      <div id="rcard" class="rcard panel"></div>
+    </div>
+  </div>
+
+  <div id="sub-learn" class="hidden">
+    <div id="learnBox"></div>
+  </div>
+
+  <div id="sub-how" class="hidden">
+    <div class="panel pad"><h2>За 24 часа</h2><div id="funnel"></div></div>
+    <div class="two">
+      <div class="panel pad"><h2>Пачки для агента</h2><div id="agentBox"></div></div>
+      <div class="panel pad"><h2>Чаще всего находили правила</h2><div id="reasons"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ИСПОЛНИТЕЛИ -->
+<section id="workers" class="tab">
+  <div class="head"><h1>Исполнители</h1></div>
+  <div id="alerts"></div>
+  <div id="geo" class="panel hidden"></div>
+  <div class="bar-tools">
+    <div class="seg" id="wsort" role="group" aria-label="Сортировка">
+      <button data-s="risk" class="on">По риску</button>
+      <button data-s="volume">По объёму за сутки</button>
+      <button data-s="bad">По доле брака</button>
+    </div>
+  </div>
+  <div id="wtable" class="panel"></div>
+</section>
+
+<!-- ЖУРНАЛ -->
+<section id="log" class="tab">
+  <div class="head"><h1>Журнал</h1><p class="lead">Всё, что панель отправила в UNU, и изменения правил проверки.</p></div>
+  <div id="actions" class="panel"></div>
+</section>
+</main>
+
+<!-- ФОРМЫ -->
+<dialog id="projectDlg">
+  <form id="projectForm" method="dialog" class="dlg">
+    <h2>Новый товар</h2>
+    <p class="lead">В UNU товар станет папкой: в ней будут все его ТЗ.</p>
+    <label>Название <input name="name" required placeholder="Термокружка Arctic 450 мл"></label>
+    <div class="row2">
+      <label>Маркетплейс <select name="marketplace"><option value="wb">Wildberries</option><option value="ozon">Ozon</option><option value="ym">Яндекс Маркет</option></select></label>
+      <label>Артикул <input name="sku" inputmode="numeric" placeholder="184467291"></label>
+    </div>
+    <label>Ссылка на товар <input name="product_url" type="url" placeholder="https://www.wildberries.ru/catalog/…"></label>
+    <label>Поисковые запросы <input name="keywords" placeholder="термокружка, термос кружка"><small>Через запятую. По ним панель следит за местом в выдаче.</small></label>
+    <div class="dlg-foot"><button type="button" class="btn" data-close>Отмена</button><button class="btn primary" value="ok">Добавить товар</button></div>
+  </form>
+</dialog>
+
+<dialog id="keyDlg">
+  <form id="keyForm" method="dialog" class="dlg">
+    <h2>Ключ API UNU</h2>
+    <p class="lead" id="keyState"></p>
+    <label>Новый ключ <input name="key" type="password" autocomplete="off" spellcheck="false" placeholder="вставьте ключ из кабинета UNU, раздел API">
+      <small>Панель проверит ключ запросом баланса и сохранит его у себя в <code>data/key.json</code>. Обратно ключ не показывается.</small></label>
+    <div class="dlg-foot"><button type="button" class="btn" id="keyDel">Убрать ключ</button><button type="button" class="btn" data-close>Закрыть</button><button class="btn primary" value="ok">Сохранить</button></div>
+  </form>
+</dialog>
+
+<dialog id="tzDlg">
+  <form id="tzForm" method="dialog" class="dlg">
+    <h2>Новое ТЗ</h2>
+    <div class="row2">
+      <label>Товар <select name="project" id="tzProject"></select></label>
+      <label>Как выполнять <select name="mode" id="tzMode">
+        <option value="task">Своё задание с отчётами</option>
+        <option value="service">Готовая услуга UNU, без отчётов</option></select></label>
+    </div>
+    <label class="svc hidden">Услуга <select name="service" id="tzService"></select></label>
+    <label class="own">Что сделать исполнителю <select name="kind" id="tzKind">
+      <option value="card_boost">Найти по фото и фильтру цены → корзина и избранное (4 скрина)</option>
+      <option value="search_cart">Найти по запросу → в корзину</option>
+      <option value="favorite">Найти по запросу → в избранное</option>
+      <option value="review_like">Отметить полезным верхний отзыв</option></select></label>
+    <label class="own">Поисковый запрос <select name="keyword" id="tzKeyword"></select></label>
+    <div class="row2 own boost">
+      <label>Фильтр цены от, ₽ <input name="price_from" type="number" min="0" placeholder="2600"></label>
+      <label>до, ₽ <input name="price_to" type="number" min="0" placeholder="2800"></label>
+    </div>
+    <div class="row3">
+      <label>В день <input name="per_day" type="number" value="50" min="1" required></label>
+      <label>Дней <input name="days" type="number" value="4" min="1" required></label>
+      <label class="own">Цена, ₽ <input name="price" type="number" step="0.5" value="5" min="5"></label>
+    </div>
+    <label class="own">Контрольный ответ <input name="control_expected" placeholder="цена 1290 / цифры 291 / слово"><small>Его знает только тот, кто открыл товар. По нему отчёт проверяется без картинки.</small></label>
+    <p class="note svc hidden">UNU сам ищет исполнителей и не присылает отчётов. Лимита в сутки у услуги нет — панель ставит заказ на дневной объём раз в сутки.</p>
+    <div class="dlg-foot"><div id="tzSum" class="sum"></div><button type="button" class="btn" data-close>Отмена</button><button class="btn primary" value="ok">Запустить в UNU</button></div>
+  </form>
+</dialog>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="static/app.js"></script>
+</body>
+</html>

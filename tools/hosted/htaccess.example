@@ -1,0 +1,19 @@
+# Папка сайта: index.html, static/, app.cgi и этот файл под именем .htaccess.
+# Код панели и data/ (база, ключ, кеш скринов) лежат ВНЕ веб-папки, файл паролей — тоже.
+# В index.html перед подключением app.js нужна строка с адресом CGI:
+#   <script>window.API_BASE="/путь/к/папке/app.cgi";</script>
+#
+# По http не отдаём ничего и пароль не спрашиваем: иначе пароль и ключ площадки пойдут по сети открыто.
+# Заголовок X-Forwarded-Proto ставит прокси хостинга; если прокси нет — замените условие на %{HTTPS} != 'on'.
+<If "%{HTTP:X-Forwarded-Proto} != 'https'">
+    Require all denied
+</If>
+<Else>
+    AuthType Basic
+    AuthName "UNU panel"
+    AuthUserFile /путь/вне/сайта/.htpasswd
+    Require valid-user
+</Else>
+Options -Indexes +ExecCGI
+AddHandler cgi-script .cgi
+DirectoryIndex index.html
